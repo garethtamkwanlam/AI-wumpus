@@ -527,16 +527,16 @@ void searchPath(){
   // int xx1, yy1, dd1;
 
   sstepqueue.push(qint);
+  //
+  // destinationx = 1;
+  // destinationy = 1;
 
-  destinationx = 1;
-  destinationy = 1;
-
-  // if ( (destinationx == -99 && destinationy == -99 )
-  // || priorityactionqueue.size() == 0 || parsequeue.size() == 0){
-  // 	cout << " # destination reset " << endl ;
+   if ( (destinationx == -99 && destinationy == -99 )
+   || priorityactionqueue.size() == 0 || parsequeue.size() == 0){
+   	cout << " # destination reset " << endl ;
   // 	//	searchDest();
-  // 	searchDest();
-  // }
+   	searchDest();
+   }
 
   while (true){
 
@@ -762,7 +762,7 @@ void searchPath(){
 
       /*-----------------------------------------Update KB-----------------------------------------------------*/
 
-      cout << "#  Stench : " << breeze << " rf : " << bump << "rr : " << scream << endl;
+      cout << "#  breeze : " << breeze << " bump : " << bump << "stench : " << stench << endl;
 
       given();
 
@@ -824,7 +824,9 @@ void searchPath(){
                   }
                 }
 
-              }else if (glitter){
+              }
+
+              if (glitter){
                 cout << " #  3 enter in else statement " << endl;
                 cout << "Grab" << endl;
                 continue;
@@ -846,9 +848,24 @@ void searchPath(){
                 cout << output << endl;
                 continue;
               }
+              if (breeze){
+
+                if (roommap[tracex][yy] > BLOCK){
+                  roommap[tracex][yy] = MAYDAN;
+                }
+                if (roommap[tracex][ym] > BLOCK){
+                  //cout << "#it is true" << endl;
+                  roommap[tracex][ym] = MAYDAN;
+                }
+                if (roommap[xx][tracey]  > BLOCK ){
+                  roommap[xx][tracey] = MAYDAN;
+                }
+                if (roommap[xm][tracey]  > BLOCK ){
+                  roommap[xm][tracey] = MAYDAN;
+                }
 
 
-              if (!stench && !breeze){
+              }else if (!stench && !breeze){
 
                 cout << " # nothing happen " << endl;
 
@@ -870,28 +887,11 @@ void searchPath(){
                   roommap[xm][tracey] = SAFE;
                 }
               }
-              /*-----------------------------------------base case-----------------------------------------------------*/
-              if (breeze){
+              cout << "#  NORTH status on roommap[" << tracex << "][" << yy << "] : " <<  roommap[tracex][yy] << endl;
+              cout << "#  SOUTH status on roommap[" << tracex << "][" << ym << "] : " <<  roommap[tracex][ym] << endl;
+              cout << "#  EAST on roommap[" << xx << "][" << tracey << "] : " <<  roommap[xx][tracey] << endl;
+              cout << "#  WEST on roommap[" << xm << "][" << tracey << "] : " <<  roommap[xm][tracey] << endl;
 
-                if (roommap[tracex][yy] > BLOCK){
-                  roommap[tracex][yy] = MAYDAN;
-                }
-                if (roommap[tracex][ym] > BLOCK){
-                  //cout << "#it is true" << endl;
-                  roommap[tracex][ym] = MAYDAN;
-                }
-                if (roommap[xx][tracey]  > BLOCK ){
-                  roommap[xx][tracey] = MAYDAN;
-                }
-                if (roommap[xm][tracey]  > BLOCK ){
-                  roommap[xm][tracey] = MAYDAN;
-                }
-                cout << "#  NORTH status on roommap[" << tracex << "][" << yy << "] : " <<  roommap[tracex][yy] << endl;
-                cout << "#  SOUTH status on roommap[" << tracex << "][" << ym << "] : " <<  roommap[tracex][ym] << endl;
-                cout << "#  EAST on roommap[" << xx << "][" << tracey << "] : " <<  roommap[xx][tracey] << endl;
-                cout << "#  WEST on roommap[" << xm << "][" << tracey << "] : " <<  roommap[xm][tracey] << endl;
-
-              }
 
               if (priorityactionqueue.size() == 0){
             //		cout << " # nothing come up, populating the priority Queue" << endl;
