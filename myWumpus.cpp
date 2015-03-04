@@ -189,7 +189,7 @@ int getabsoluate(int big, int small){
 
 void changeForward(char maindir, string output){
 
-  if (output == "forward" ){
+  if (output == "forward" && !bump){
 
     if (maindir == NORTH){
       tracey = tracey + 1;
@@ -418,6 +418,8 @@ void searchDest(){
 
 }
 void updatedir ( char direction, string output){
+
+  cout << " # updating direction" <<endl;
 
   if (direction == EAST ) {
     if ( output == "right" ) {
@@ -676,12 +678,6 @@ void searchPath(){
     //	cout << " # rpath : " << fx << "," << fy << "," << dr << endl;
     }
 
-      // cout << " # out fpath " << fpath << endl;;
-      // cout << " # out rpath  " << rpath << endl;
-      // cout << " # out lpath " << lpath << endl;
-
-
-
     }
   }
 }
@@ -850,6 +846,8 @@ void searchPath(){
               }
               if (breeze){
 
+                cout << " # Sensed a breeze " << endl;
+
                 if (roommap[tracex][yy] > BLOCK){
                   roommap[tracex][yy] = MAYDAN;
                 }
@@ -898,18 +896,24 @@ void searchPath(){
                 populatePriorityQueue();
               }
               char re = priorityactionqueue.front();
+              cout << " # debug maindir " << maindir << endl;
               if (re == 'R'){
+                cout << " # debug c maindir " << maindir << endl;
                 output = "right";
                 updatedir(maindir, output);
               }else if (re == 'L'){
+                cout << " # debug  l maindir " << maindir << endl;
                 output = "left";
                 updatedir(maindir, output);
               }else {
                 output = "forward";
+
               }
               cout << " # size of the priorityactionqueue is " << priorityactionqueue.size() << endl;
               priorityactionqueue.pop();
               changeForward(maindir, output);
+
+
               cout << output << endl;
               continue;
 
