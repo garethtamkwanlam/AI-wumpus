@@ -23,7 +23,7 @@ const int SOUTHI = 3;
 const int NORTHI = 1;
 const int NORTH_I = 5;
 
-const int HOME = 99;
+const int HOME = 90;
 
 const char EAST = 'E';
 const char WEST = 'W';
@@ -341,6 +341,9 @@ void searchDest(){
       destinationx = xx;
       destinationy = yy;
 
+      cout << " # destinationx " << destinationx << endl;
+      cout << " # destinationy " << destinationy << endl;
+
       emptysdest();
 
       run = false;
@@ -556,17 +559,17 @@ void searchPath(){
     // }
     char cdd = convertDirToChar(dd);
 
-    cout << " # ppath : " << xx << "," << yy << "," << dd << endl;
+//    cout << " # ppath : " << xx << "," << yy << "," << dd << endl;
 
 
     //	cout << " # size of sstepqueue is " << sstepqueue.size() << endl;
 
     if (xx == destinationx && yy == destinationy){
 
-      cout << " ## found destination " << endl;
+  //    cout << " ## found destination " << endl;
       if (actionqueue.size() != 0 && actionqueue.front() != ""){
         string opath = actionqueue.front();
-        cout << " # found the path " << opath << endl;
+    //    cout << " # found the path " << opath << endl;
         int strsize = opath.size();
         int strstemp = strsize;
         for ( int i = 0; i < strsize; i++){
@@ -652,7 +655,7 @@ void searchPath(){
       }
 
 
-      cout << " #  get to here " << endl;
+  //    cout << " #  get to here " << endl;
       //L
       string r= "R";
       int dr = dd + 1;
@@ -687,11 +690,11 @@ void searchPath(){
   void populatePriorityQueue(){
 
     if (parsequeue.size() == 0){
-      cout << " # nothing I can get, searching for the Path " << endl;
+//      cout << " # nothing I can get, searching for the Path " << endl;
       searchPath();
     }
 
-    cout << " # there are " << parsequeue.size() << " item in the queue " << endl;
+  //  cout << " # there are " << parsequeue.size() << " item in the queue " << endl;
 
     char first, second, third;
 
@@ -721,6 +724,35 @@ void searchPath(){
 
   }
 
+string getOutput(){
+  string output ;
+    if (priorityactionqueue.size() == 0){
+
+
+//		cout << " # nothing come up, populating the priority Queue" << endl;
+    populatePriorityQueue();
+  }
+  char re = priorityactionqueue.front();
+//  cout << " # debug maindir " << maindir << endl;
+  if (re == 'R'){
+  //  cout << " # debug c maindir " << maindir << endl;
+    output = "right";
+    updatedir(maindir, output);
+  }else if (re == 'L'){
+  //  cout << " # debug  l maindir " << maindir << endl;
+    output = "left";
+    updatedir(maindir, output);
+  }else {
+    output = "forward";
+
+  }
+  cout << " # size of the priorityactionqueue is " << priorityactionqueue.size() << endl;
+  priorityactionqueue.pop();
+  changeForward(maindir, output);
+  return output;
+}
+
+
   int main(){
     string output;
     cout << " # maindirection " << maindir << endl; //assuming that every is maindir
@@ -737,6 +769,26 @@ void searchPath(){
     roommap[0][0] = HOME;
 
     while(1){
+
+      for ( int i = range - 1; i >= 0; i--){
+
+        cout << " # " ;
+        for ( int j = 0 ; j  < range ; j++){
+          char g;
+          if (roommap[i][j] == SAFE) g = 'S';
+          else if (roommap[i][j] == UNKNOWN) g = 'K';
+          else if (roommap[i][j] == MAYDAN) g = 'A';
+          else if (roommap[i][j] == MAYWUM) g = 'C';
+          else if (roommap[i][j] == BLOCK) g = 'B';
+          else if (roommap[i][j] == WUMPUS) g = 'W';
+          else if (roommap[i][j] == PIT) g ='P';
+          else g = 'U';
+
+          cout << g << " " ;
+        }
+
+        cout << endl;
+      }
 
       string str;
       string output;
@@ -758,7 +810,7 @@ void searchPath(){
 
       /*-----------------------------------------Update KB-----------------------------------------------------*/
 
-      cout << "#  breeze : " << breeze << " bump : " << bump << "stench : " << stench << endl;
+  //    cout << "#  breeze : " << breeze << " bump : " << bump << "stench : " << stench << endl;
 
       given();
 
@@ -820,15 +872,17 @@ void searchPath(){
                   }
                 }
 
-              }
+          }
 
               if (glitter){
-                cout << " #  3 enter in else statement " << endl;
+              //  cout << " #  3 enter in else statement " << endl;
                 cout << "Grab" << endl;
                 continue;
               }
 
               if (bump){
+
+              //  cout << " # encounter a bump " << endl;
 
                 /* encounter a wall, then turn right*/
                 if (maindir == NORTH){
@@ -840,13 +894,12 @@ void searchPath(){
                 }else if (maindir == WEST){
                   roommap[xm][tracey] = BLOCK;
                 }
-                string output = "right";
-                cout << output << endl;
+                cout << getOutput() << endl;
                 continue;
-              }
+              }else
               if (breeze){
 
-                cout << " # Sensed a breeze " << endl;
+    //            cout << " # Sensed a breeze " << endl;
 
                 if (roommap[tracex][yy] > BLOCK){
                   roommap[tracex][yy] = MAYDAN;
@@ -865,24 +918,40 @@ void searchPath(){
 
               }else if (!stench && !breeze){
 
-                cout << " # nothing happen " << endl;
+  //              cout << " # nothing happen " << endl;
 
-                cout << " # tracex[" << tracex << "][" << tracey << "] is SAFE " << endl;
+//                cout << " # tracex[" << tracex << "][" << tracey << "] is SAFE " << endl;
 
-                if (roommap[tracex][yy] > BLOCK){
+                if (roommap[tracex][yy] > BLOCK || roommap[tracex][yy] == 0){
+                  if ( tracex < 0 || yy < 0){
+                    roommap[tracex][yy] = BLOCK;
+                  }else {
                   roommap[tracex][yy] = SAFE;
+                  }
                 }
 
-                if (roommap[tracex][ym] > BLOCK){
-                  roommap[tracex][ym] = SAFE;
+                if (roommap[tracex][ym] > BLOCK || roommap[tracex][ym] == 0){
+                  if (tracex < 0 || ym < 0){
+                    roommap[tracex][ym] = BLOCK;
+                  }else {
+                    roommap[tracex][ym] = SAFE;
+                  }
                 }
 
-                if (roommap[xx][tracey] > BLOCK){
-                  roommap[xx][tracey] = SAFE;
+                if (roommap[xx][tracey] > BLOCK || roommap[xx][tracey] == 0){
+                  if (xx < 0 || tracey < 0){
+                    roommap[xx][tracey] = BLOCK;
+                  }else {
+                    roommap[xx][tracey] = SAFE;
+                  }
                 }
 
-                if (roommap[xm][tracey] > BLOCK){
+                if (roommap[xm][tracey] > BLOCK || roommap[xm][tracey] == 0){
+                  if (xm < 0 || tracey < 0 ){
+                    roommap[xm][tracey] = BLOCK;
+                  }else {
                   roommap[xm][tracey] = SAFE;
+                  }
                 }
               }
               cout << "#  NORTH status on roommap[" << tracex << "][" << yy << "] : " <<  roommap[tracex][yy] << endl;
@@ -891,30 +960,9 @@ void searchPath(){
               cout << "#  WEST on roommap[" << xm << "][" << tracey << "] : " <<  roommap[xm][tracey] << endl;
 
 
-              if (priorityactionqueue.size() == 0){
-            //		cout << " # nothing come up, populating the priority Queue" << endl;
-                populatePriorityQueue();
-              }
-              char re = priorityactionqueue.front();
-              cout << " # debug maindir " << maindir << endl;
-              if (re == 'R'){
-                cout << " # debug c maindir " << maindir << endl;
-                output = "right";
-                updatedir(maindir, output);
-              }else if (re == 'L'){
-                cout << " # debug  l maindir " << maindir << endl;
-                output = "left";
-                updatedir(maindir, output);
-              }else {
-                output = "forward";
-
-              }
-              cout << " # size of the priorityactionqueue is " << priorityactionqueue.size() << endl;
-              priorityactionqueue.pop();
-              changeForward(maindir, output);
 
 
-              cout << output << endl;
+              cout << getOutput() << endl;
               continue;
 
             }
