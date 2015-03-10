@@ -6,7 +6,6 @@
 #include <iterator>
 #include <stdlib.h>
 
-
 using namespace std;
 
 
@@ -40,6 +39,8 @@ const int MAYWUM = 103;
 const int MAYDAN = 104;
 const int UNKNOWN = 105;
 
+bool checkwumpus = true;
+
 int goHome = true;
 int tracex = 0;
 int tracey = 0;
@@ -64,25 +65,8 @@ int roomprop[range][range];
 
 int roommap[range][range];
 
-bool checkfordone(){
 
-  bool done = true;
 
-  for ( int i = 0 ;i < range; i++) {
-    for ( int j = 0; j < range; j++ ){
-      if (roommap[i][j] == SAFE){
-        done = false;
-      }
-    }
-  }
-  return done;
-}
-
-void given(){
-  roommap[1][0] = SAFE;
-  roommap[0][1] = SAFE;
-  roommap[1][1] = SAFE;
-}
 
 bool deplicateDest(vector<int> vv){
 
@@ -139,36 +123,27 @@ int convertCharToDir(char dirr){
 }
 
 bool isblock(int x, int y){
-
   bool pass = false;
   if (roommap[x][y] == BLOCK){
     pass = true;
   }
-
   return pass;
-
 }
 
 bool maypit(int x, int y){
-
   bool pass = false;
   if (roommap[x][y] == MAYDAN){
     pass = true;
   }
-
   return pass;
-
 }
 
 bool maystench(int x, int y){
-
   bool pass = false;
   if (roommap[x][y] == MAYWUM){
     pass = true;
   }
-
   return pass;
-
 }
 
 
@@ -298,9 +273,9 @@ void searchDest(){
 
   int idir = convertCharToDir(atdir);
 
-  cout << "# idir : " << idir << endl;
-  cout << " # tracex : " << atx << endl;
-  cout << " # tracey : " << aty << endl;
+//  cout << "# idir : " << idir << endl;
+//  cout << " # tracex : " << atx << endl;
+//  cout << " # tracey : " << aty << endl;
 
   int q[3] = {atx, aty, idir};
   std::vector<int> qint ;//( begin(q), end(q));
@@ -330,7 +305,7 @@ void searchDest(){
 
     char cdd = convertDirToChar(dd);
 
-    cout << " # pcurrent : " << xx << "," << yy << "," << dd << endl;
+  //  cout << " # pcurrent : " << xx << "," << yy << "," << dd << endl;
 
 
       //	cout << " # size of sstepqueue is " << sstepqueue.size() << endl;
@@ -529,8 +504,6 @@ void searchPath(){
   qint.push_back(aty);
   qint.push_back(idir);
 
-  // int xx1, yy1, dd1;
-
   sstepqueue.push(qint);
   //
   // destinationx = 1;
@@ -559,10 +532,6 @@ void searchPath(){
     // }
     char cdd = convertDirToChar(dd);
 
-//    cout << " # ppath : " << xx << "," << yy << "," << dd << endl;
-
-
-    //	cout << " # size of sstepqueue is " << sstepqueue.size() << endl;
 
     if (xx == destinationx && yy == destinationy){
 
@@ -677,8 +646,6 @@ void searchPath(){
         sstepqueue.push(qr);
         actionqueue.push(rpath);
       }
-
-    //	cout << " # rpath : " << fx << "," << fy << "," << dr << endl;
     }
 
     }
@@ -725,11 +692,10 @@ void searchPath(){
   }
 
 string getOutput(){
+
+  cout << " # generating the output " << endl;
   string output ;
     if (priorityactionqueue.size() == 0){
-
-
-//		cout << " # nothing come up, populating the priority Queue" << endl;
     populatePriorityQueue();
   }
   char re = priorityactionqueue.front();
@@ -742,7 +708,7 @@ string getOutput(){
   //  cout << " # debug  l maindir " << maindir << endl;
     output = "left";
     updatedir(maindir, output);
-  }else {
+  }else if ( re == 'F'){
     output = "forward";
 
   }
@@ -754,39 +720,62 @@ string getOutput(){
 
 
   int main(){
+
     string output;
     cout << " # maindirection " << maindir << endl; //assuming that every is maindir
     //set everybox to be unknown
-    for ( int s = 0 ; s < 40; s++){
-      for (int g = 0; g< 40; g++){
-        roommap[s][g] = UNKNOWN;
+
+    for ( int s = range ; s >= -1 ; s--){
+      for (int g = -1; g <= range; g++){
+        if ( (s == -1 || s == 4 || g ==-1 | g == 4 )){
+          roommap[g][s] = BLOCK;
+        }else {
+          roommap[g][s] = UNKNOWN;
+        }
+        cout << " # roommap " << g << " " << s << " is " << roommap[g][s] << endl;
       }
     }
 
-    bool init = true;
-    char rl, rf, rr, dt, h;
-
     roommap[0][0] = HOME;
-
+    char rl, rf, rr, dt, h;
     while(1){
 
-      for ( int i = range - 1; i >= 0; i--){
-
+      for ( int i = range; i >= -1; i--){
         cout << " # " ;
-        for ( int j = 0 ; j  < range ; j++){
+        for ( int j = -1; j <= range; j++){
+          cout << roommap[j][i] << " " ;
+        }
+        cout << endl;
+      }
+
+      cout << " # tracex " << tracex << " tracey " << tracey << endl;
+      for ( int i = range ; i >= -1; i--){
+        cout << " # range " << i ;
+        for ( int j = -1; j <= range; j++){
           char g;
-          if (roommap[i][j] == SAFE) g = 'S';
-          else if (roommap[i][j] == UNKNOWN) g = 'K';
-          else if (roommap[i][j] == MAYDAN) g = 'A';
-          else if (roommap[i][j] == MAYWUM) g = 'C';
-          else if (roommap[i][j] == BLOCK) g = 'B';
-          else if (roommap[i][j] == WUMPUS) g = 'W';
-          else if (roommap[i][j] == PIT) g ='P';
-          else g = 'U';
+          cout << j ;
+          switch (roommap[j][i]){
+            case SAFE : g = 'S';
+            break;
+            case UNKNOWN : g = 'K';
+            break;
+            case MAYDAN : g = 'A';
+            break;
+            case BLOCK : g = 'B';
+            break;
+            case WUMPUS : g = 'W';
+            break;
+            case HOME : g = 'H';
+            break;
+            case PIT : g = 'P';
+            break;
+            default :
+            g = 'U';
+            break;
+          }
 
           cout << g << " " ;
         }
-
         cout << endl;
       }
 
@@ -807,12 +796,7 @@ string getOutput(){
       if (dt == 'y') {bump = true;} else { bump = false;};
       if (h == 'y')  {scream = true;} else { scream = false;};
 
-
       /*-----------------------------------------Update KB-----------------------------------------------------*/
-
-  //    cout << "#  breeze : " << breeze << " bump : " << bump << "stench : " << stench << endl;
-
-      given();
 
       int yy = tracey + 1;
       int xx = tracex + 1;
@@ -821,7 +805,7 @@ string getOutput(){
 
       cout << "# maindir is " << maindir << endl;
 
-      if (stench){
+      if (stench && checkwumpus){
 
         string output ;
 
@@ -871,7 +855,6 @@ string getOutput(){
                     continue;
                   }
                 }
-
           }
 
               if (glitter){
@@ -880,23 +863,6 @@ string getOutput(){
                 continue;
               }
 
-              if (bump){
-
-              //  cout << " # encounter a bump " << endl;
-
-                /* encounter a wall, then turn right*/
-                if (maindir == NORTH){
-                  roommap[tracex][yy] = BLOCK;
-                }else if (maindir == EAST){
-                  roommap[xx][tracey] = BLOCK;
-                }else if (maindir == SOUTH){
-                  roommap[tracex][ym] = BLOCK;
-                }else if (maindir == WEST){
-                  roommap[xm][tracey] = BLOCK;
-                }
-                cout << getOutput() << endl;
-                continue;
-              }else
               if (breeze){
 
     //            cout << " # Sensed a breeze " << endl;
@@ -916,54 +882,35 @@ string getOutput(){
                 }
 
 
-              }else if (!stench && !breeze){
+              }else {
 
-  //              cout << " # nothing happen " << endl;
-
-//                cout << " # tracex[" << tracex << "][" << tracey << "] is SAFE " << endl;
-
-                if (roommap[tracex][yy] > BLOCK || roommap[tracex][yy] == 0){
-                  if ( tracex < 0 || yy < 0){
-                    roommap[tracex][yy] = BLOCK;
-                  }else {
+                if (roommap[tracex][yy] > BLOCK ){
                   roommap[tracex][yy] = SAFE;
                   }
-                }
 
-                if (roommap[tracex][ym] > BLOCK || roommap[tracex][ym] == 0){
-                  if (tracex < 0 || ym < 0){
-                    roommap[tracex][ym] = BLOCK;
-                  }else {
+
+                if (roommap[tracex][ym] > BLOCK ){
                     roommap[tracex][ym] = SAFE;
                   }
-                }
 
-                if (roommap[xx][tracey] > BLOCK || roommap[xx][tracey] == 0){
-                  if (xx < 0 || tracey < 0){
-                    roommap[xx][tracey] = BLOCK;
-                  }else {
+
+                if (roommap[xx][tracey] > BLOCK ){
                     roommap[xx][tracey] = SAFE;
                   }
-                }
 
-                if (roommap[xm][tracey] > BLOCK || roommap[xm][tracey] == 0){
-                  if (xm < 0 || tracey < 0 ){
-                    roommap[xm][tracey] = BLOCK;
-                  }else {
+
+                if (roommap[xm][tracey] > BLOCK ){
                   roommap[xm][tracey] = SAFE;
                   }
-                }
+
               }
               cout << "#  NORTH status on roommap[" << tracex << "][" << yy << "] : " <<  roommap[tracex][yy] << endl;
               cout << "#  SOUTH status on roommap[" << tracex << "][" << ym << "] : " <<  roommap[tracex][ym] << endl;
               cout << "#  EAST on roommap[" << xx << "][" << tracey << "] : " <<  roommap[xx][tracey] << endl;
               cout << "#  WEST on roommap[" << xm << "][" << tracey << "] : " <<  roommap[xm][tracey] << endl;
-
-
-
-
               cout << getOutput() << endl;
               continue;
 
-            }
+
           }
+        }
